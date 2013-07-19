@@ -1,3 +1,6 @@
+[blog](http://www.xuetech.com/2013/07/console-qrcode.html)
+------
+
 console-qrcode
 ==============
 Simple C program that draws a QR code on the linux console via modifying the framebuffer.
