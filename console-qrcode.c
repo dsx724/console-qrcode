@@ -10,7 +10,6 @@
 #include <string.h>
 #include <qrencode.h>
 #include <getopt.h>
-#include <ctype.h>
 
 void printUsage(){
 	fputs("Forever Alone :D\n",stderr);
