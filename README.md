@@ -12,7 +12,7 @@ compile
 =======
 ```bash
 sudo apt-get install libqrencode-dev
-gcc console-qrcode.c -o console-qrcode
+gcc -l qrencode -O3 console-qrcode.c -o console-qrcode
 ```
 
 usage
