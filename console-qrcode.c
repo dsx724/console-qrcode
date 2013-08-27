@@ -12,7 +12,7 @@
 #include <getopt.h>
 
 void printUsage(){
-	fputs("Forever Alone :D\n",stderr);
+	fputs("pwhxyv\n",stderr);
 	exit(1);
 }
 void printInvalidArgumentValue(char * argument, char * value){
