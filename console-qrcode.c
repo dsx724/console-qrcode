@@ -20,7 +20,7 @@ void printInvalidArgumentValue(char * argument, char * value){
 	exit(1);
 }
 void printInvalidInputLength(){
-	fputs("QR input data must be less than 1000 bytes.",stderr);
+	fputs("QR input data must be less than 256 bytes.",stderr);
 	exit(1);
 }
 
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 		printf("y_offset %d\n",y_offset);
 	}
 	
-	const int input_buffer_length = 1000;
+	const int input_buffer_length = 257;
 	char input[input_buffer_length];
 	
 	if (isatty(STDIN_FILENO)){
@@ -79,11 +79,12 @@ int main(int argc, char **argv) {
 		if (strlen(argv[argc - 1]) < input_buffer_length) strcpy(input,argv[argc - 1]);
 		else printInvalidInputLength();
 	} else {
-		int input_length = read(STDIN_FILENO,input,input_buffer_length);
+		int input_length = read(STDIN_FILENO,input,input_buffer_length - 1);
 		if (input_length < 0){
 			perror("read");
 			return 1;
-		} else if (input_length == 1000) printInvalidInputLength();
+		} else if (input_length == input_buffer_length) printInvalidInputLength();
+		input[input_length] = 0;
 	}
 	
 	if (verbose) printf("Encoding %s\n",input);
