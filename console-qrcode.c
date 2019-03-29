@@ -40,7 +40,7 @@ const struct option long_options[] = {
 
 int main(int argc, char **argv) {
 	int longindex;
-	char option;
+	int option;
 	while ((option = getopt_long(argc,argv,short_options,long_options, &longindex)) != -1){
 		switch (option){
 		case 'p':
