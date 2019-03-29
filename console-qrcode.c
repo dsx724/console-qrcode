@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
 		if (input_length < 0){
 			perror("read");
 			return 1;
-		} else if (input_length == input_buffer_length) printInvalidInputLength();
+		} else if (input_length == input_buffer_length - 1) printInvalidInputLength();
 		input[input_length] = 0;
 	}
 	
