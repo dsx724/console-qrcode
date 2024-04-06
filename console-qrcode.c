@@ -12,7 +12,7 @@
 #include <getopt.h>
 
 void printUsage(){
-	fputs("pwhxyv\n",stderr);
+	fputs("fxypwhv\n",stderr);
 	exit(1);
 }
 void printInvalidArgumentValue(char * argument, char * value){
@@ -24,16 +24,18 @@ void printInvalidInputLength(){
 	exit(1);
 }
 
-static int module_pixels = 3, border_width_modules = 4, border_height_modules = 4, x_offset = 0, y_offset = 0, verbose = 0;
+static char * framebuffer = "/dev/fb0";
+static int x_offset = 0, y_offset = 0, verbose = 0, module_pixels = 3, border_width_modules = 4, border_height_modules = 4;
 
-const char * short_options = "+p:w:h:x:y:v";
+const char * short_options = "+f:x:y:p:w:h:v";
 
 const struct option long_options[] = {
+		{"framebuffer",required_argument,NULL,'f'},
+		{"x_offset",required_argument,NULL,'x'},
+		{"y_offset",required_argument,NULL,'y'},
 		{"module_pixels",required_argument,NULL,'p'},
 		{"border_width_modules",required_argument,NULL,'w'},
 		{"border_height_modules",required_argument,NULL,'h'},
-		{"x_offset",required_argument,NULL,'x'},
-		{"y_offset",required_argument,NULL,'y'},
 		{"verbose",no_argument,NULL,'v'},
 		{NULL,0,0,0}
 };
@@ -43,31 +45,33 @@ int main(int argc, char **argv) {
 	int option;
 	while ((option = getopt_long(argc,argv,short_options,long_options, &longindex)) != -1){
 		switch (option){
-		case 'p':
-			if ((module_pixels = atoi(optarg)) < 1 || module_pixels > 9)
-				printInvalidArgumentValue("the number of module pixels.",optarg);
-			break;
-		case 'w':
-			if ((border_width_modules = atoi(optarg)) < 0 || border_width_modules > 9)
-				printInvalidArgumentValue("the border module width.",optarg);
-			break;
-		case 'h':
-			if ((border_height_modules = atoi(optarg)) < 0 || border_height_modules > 9)
-				printInvalidArgumentValue("the border module height.",optarg);
-			break;
-		case 'x': x_offset = atoi(optarg); break;
-		case 'y': y_offset = atoi(optarg); break;
-		case 'v': verbose = 1; break;
-		case '?': exit(1); break;
+			case 'f': framebuffer = optarg; break;
+			case 'x': x_offset = atoi(optarg); break;
+			case 'y': y_offset = atoi(optarg); break;
+			case 'p':
+				if ((module_pixels = atoi(optarg)) < 1 || module_pixels > 9)
+					printInvalidArgumentValue("the number of module pixels.",optarg);
+				break;
+			case 'w':
+				if ((border_width_modules = atoi(optarg)) < 0 || border_width_modules > 9)
+					printInvalidArgumentValue("the border module width.",optarg);
+				break;
+			case 'h':
+				if ((border_height_modules = atoi(optarg)) < 0 || border_height_modules > 9)
+					printInvalidArgumentValue("the border module height.",optarg);
+				break;
+			case 'v': verbose = 1; break;
+			case '?': exit(1); break;
 		}
 	}
 	
 	if (verbose){
-		printf("module_pixels %d\n",module_pixels);
-		printf("border_width_modules %d\n",border_width_modules);
-		printf("border_height_modules %d\n",border_height_modules);
-		printf("x_offset %d\n",x_offset);
-		printf("y_offset %d\n",y_offset);
+		printf("framebuffer %s\n", framebuffer);
+		printf("x_offset %d\n", x_offset);
+		printf("y_offset %d\n", y_offset);
+		printf("module_pixels %d\n", module_pixels);
+		printf("border_width_modules %d\n", border_width_modules);
+		printf("border_height_modules %d\n", border_height_modules);
 	}
 	
 	const int input_buffer_length = 257;
@@ -87,7 +91,7 @@ int main(int argc, char **argv) {
 		input[input_length] = 0;
 	}
 	
-	if (verbose) printf("Encoding %s\n",input);
+	if (verbose) printf("Encoding %s\n", input);
 	//if (verbose) printf("argc %d optind %d longindex %d\n",argc,optind,longindex);
 
 	int bpp; //bytes per pixel
@@ -102,7 +106,7 @@ int main(int argc, char **argv) {
 	char *buffer;
 	size_t buffer_length;
 
-	int fd = fd = open("/dev/fb0", O_RDWR);
+	int fd = fd = open(framebuffer, O_RDWR);
 	if (fd < 0){
 		perror("open");
 		return 1;
@@ -113,14 +117,14 @@ int main(int argc, char **argv) {
 	}
 
 	if (verbose){
-		printf("X RES %d\n",var_info.xres);
-		printf("Y RES %d\n",var_info.yres);
-		printf("X VRES %d\n",var_info.xres_virtual);
-		printf("Y VRES %d\n",var_info.yres_virtual);
-		printf("X OFF %d\n",var_info.xoffset);
-		printf("Y OFF %d\n",var_info.yoffset);
-		printf("Pixel Bits %d\n",var_info.bits_per_pixel);
-		printf("Line Bytes %d\n",fix_info.line_length);
+		printf("X RES %d\n", var_info.xres);
+		printf("Y RES %d\n", var_info.yres);
+		printf("X VRES %d\n", var_info.xres_virtual);
+		printf("Y VRES %d\n", var_info.yres_virtual);
+		printf("X OFF %d\n", var_info.xoffset);
+		printf("Y OFF %d\n", var_info.yoffset);
+		printf("BPP   %d\n", var_info.bits_per_pixel);
+		printf("Line Bytes %d\n", fix_info.line_length);
 	}
 
 	bpp = var_info.bits_per_pixel >> 3;
