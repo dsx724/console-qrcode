@@ -25,7 +25,7 @@ void printInvalidInputLength(){
 }
 
 static char * framebuffer = "/dev/fb0";
-static int x_offset = 0, y_offset = 0, verbose = 0, module_pixels = 3, border_width_modules = 4, border_height_modules = 4;
+static int x_offset = 0, y_offset = 0, module_pixels = 3, border_width_modules = 4, border_height_modules = 4, verbose = 0;
 
 const char * short_options = "+f:x:y:p:w:h:v";
 
